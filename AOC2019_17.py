@@ -4,13 +4,9 @@ ASCII (Aft Scaffolding and Information Interface)
 '''
 import Intcode
 import logging
+from collections import namedtuple
 
-class pixel():
-	def __init__(self, x, y):
-		self.x = int(x)
-		self.y = int(y)
-		self.char = ''
-		self.is_int = False
+Pixel = namedtuple('Pixel', 'x y char is_int')
 
 def get_image(file):
 	stream = Intcode(file) 	#Read in ASCII_software
@@ -34,13 +30,19 @@ def get_alignment_params():
 	
 
 def main():
+	logfile = 'AOC2019_17.log'
+	logging.basicConfig(level = logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 	ASCII_Software = 'AOC2019_17.ini'
 	stream = get_image(ASCII_Software)
 	image = parse_image(stream)
 	nodes = find_nodes(image)
 	align_params = get_alignment_params(image)
 	print(f'Calibration is {sum(align_params)}')	#Part A result
-	
+
+def test():
+	logfile = 'AOC2019_17.log'
+	logging.basicConfig(level = logging.DEBUG, filename = logfile, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 if __name__ == '__main__':
 	main()
+	#test()
