@@ -51,7 +51,7 @@ def get_image(stream):
     ''' Runs the input software into the Intcode computer, reads output stream,
     and stores data for each new Pixel object
     Returns an array (tuple of tuples) of Pixel objects'''
-    screen = ''.join(chr(p) for p in stream).splitlines()
+    screen = ''.join(chr(p) for p in stream).rstrip('\n').splitlines()
     pixels = [[Pixel(jcol,irow,p) 
            for jcol,p in enumerate(row)] 
            for irow,row in enumerate(screen)]
@@ -80,19 +80,19 @@ def read_input(file):
 
 def main():
     logfile = 'AOC2019_17.log'
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+    logging.basicConfig(level=logging.INFO, file=logfile, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
     ASCII_Software = 'AOC2019_17.ini'
     ASCII_Comp = Comp_Intcode(sw_file=ASCII_Software)
     ASCII_Comp.LOOP_compute_until_output_or_stop(stop_at_each_output=False)
     stream = ASCII_Comp.memory[:]
     image = get_image(stream)
-    pprint([[p.char for p in row] for row in image])
+    pprint([' '.join([p.char for p in row]) for row in image])
     pixels = [p for p in IT.chain.from_iterable(image)]
     for p in pixels:
         p.check_if_node(image)
     intersections = get_alignment_params(image)
     print(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result
-    logging.info(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result
+    logging.info(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result: 3336
                   
 def test():
     logfile = 'AOC2019_17Test.log'
@@ -109,5 +109,5 @@ def test():
     print(f'Calibration is {sum([ap for (pixel,ap) in intersections])}')  #Part A result: 76
     
 if __name__ == '__main__':
-    #main()
-    test()
+    main()
+    #test()
