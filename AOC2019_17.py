@@ -7,11 +7,11 @@ from IntcodeComp import Comp_Intcode
 import logging
 from collections import namedtuple
 
-Pixel = namedtuple('Pixel', 'x y char is_int')
+Pixel = namedtuple('Pixel', 'x y char is_cross is_corner')
+scaffold = ['#o']
+robot = ['<^>vx']
 ''' Character representations:
-'.' = Space
-'#' = Scaffold
-'o' = Intersection
+'.' = Space, '#' = Scaffold, 'o' = Intersection
 <,^,>,v = Robot location + direction
 X = Robot falls into space
 '''
@@ -34,14 +34,29 @@ def get_nbrs(pixel):
 	rs = (-1,0,1,0)
         cs = (0,1,0,-1)
 	nbrs = [tpadd((r,c),z) for z in zip(rs,cs)]
-	vals = [image[nr][nc] if for (nr,nc) in nbrs]
-	return tuple(up,right,down,left)
+	return tuple(nbrs)	#(up,right,down,left)
 
+def find_nodes(grid):
+	rows, cols = len(grid), len(grid[0])
+	for row in grid:
+		for pixel in row:
+			nbrs = get_nbrs(pixel)
+			in_grid = lambda r,c: (r in range(rows)) and (c in range(cols)) 
+			is_cross = lambda val: all([i == '#' for i in val])
+			is_corner = lambda val: not pixel.is_cross and 
+				any([val[i] == val[i-1] == '#' for i,v in enumerate(val)])
+			vals = [grid[nr][nc] if in_grid(nr,nc) else 'NaN' for (nr,nc) in nbrs]
+			pixel.is_cross = is_cross(vals)
+			pixel.is_corner = is_corner(vals)
+	logging.DEBUG([[pixel.char for pixel in row] for row in grid])
+	logging.DEBUG([[pixel.is_cross for pixel in row] for row in grid])
+	logging.DEBUG([[pixel.is_corner for pixel in row] for row in grid])
+	
 def get_alignment_params(image):
 	'''Finds intersections and returns tuple of (Pixel, AlignParam) pairs'''
 	ints = []
 	for pixel in image:
-		if pixel.is_int is True:
+		if pixel.is_cross is True:
 			align_param = pixel.x * pixel.y
 			ints.append((pixel,align_param))
 	return tuple(ints)
