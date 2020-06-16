@@ -25,7 +25,7 @@ def get_image(stream):
     pixels = [[Pixel(jcol,irow,p,False,False) 
            for jcol,p in enumerate(row)] 
            for irow,row in enumerate(screen)]
-    #logging.DEBUG(pixels[:][:])
+    #logging.debug(pixels[:][:])
     return tuple((tuple(line) for line in pixels))
 
 def get_nbrs(pixel):
@@ -47,9 +47,9 @@ def find_nodes(grid):
             is_corner = lambda val: not pixel.is_cross and any([val[i] == val[i-1] == '#' for i,v in enumerate(val)])
             vals = [grid[nr][nc] if in_grid(nr,nc) else 'NaN' for (nr,nc) in nbrs]
             pixel = Pixel(pixel.x, pixel.y, pixel.char, is_cross(vals),is_corner(vals))
-    pprint(f'{["".join([pixel.char for pixel in row]) for row in grid]}')
-    pprint(f'{[[pixel.is_cross for pixel in row] for row in grid]}')
-    pprint(f'{[[pixel.is_corner for pixel in row] for row in grid]}')
+    logging.debug(f'{["".join([pixel.char for pixel in row]) for row in grid]}')
+    logging.debug(f'{[[pixel.is_cross for pixel in row] for row in grid]}')
+    logging.debug(f'{[[pixel.is_corner for pixel in row] for row in grid]}')
     
 def get_alignment_params(grid):
     '''Finds intersections and returns tuple of (Pixel, AlignParam) pairs'''
@@ -77,7 +77,8 @@ def main():
     nodes = find_nodes(image)
     intersections = get_alignment_params(image)
     print(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result
-
+    logging.info(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result
+                  
 def test():
     logfile = 'AOC2019_17Test.log'
     logging.basicConfig(level = logging.DEBUG, filename = logfile, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
