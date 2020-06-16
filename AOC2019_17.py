@@ -21,8 +21,8 @@ def get_image(stream):
     ''' Runs the input software into the Intcode computer, reads output stream,
     and stores data for each new Pixel object
     Returns an array (tuple of tuples) of Pixel objects'''
-    screen = stream.splitlines()
-    pixels = [[Pixel(jcol,irow,chr(p),False,False) 
+    screen = ''.join(chr(p) for p in stream).splitlines()
+    pixels = [[Pixel(jcol,irow,p,False,False) 
            for jcol,p in enumerate(row)] 
            for irow,row in enumerate(screen)]
     #logging.DEBUG(pixels[:][:])
@@ -82,7 +82,7 @@ def test():
     logfile = 'AOC2019_17Test.log'
     logging.basicConfig(level = logging.DEBUG, filename = logfile, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
     test_input = 'AOC2019_17.test'
-    stream = (ord(c) for c in read_input(test_input))
+    stream = [ord(c) for c in read_input(test_input)]
     image = get_image(stream)
     nodes = find_nodes(image)
     intersections = get_alignment_params(image)
