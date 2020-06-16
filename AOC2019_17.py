@@ -1,10 +1,9 @@
-''' AOC2019 Day 17
-Set and Forget
+''' AOC2019 Day 17 - Set and Forget
 ASCII (Aft Scaffolding and Information Interface)
 Part A: Find alignment parameters of scaffolding intersections
 Part B: 
 '''
-import Intcode
+from IntcodeComp import Comp_Intcode 
 import logging
 from collections import namedtuple
 
@@ -28,8 +27,14 @@ def get_image(stream):
 	logging.DEBUG(pixels)
 	return tuple((tuple(line) for line in pixels))
 
-def get_nbrs():
+def get_nbrs(pixel):
 	'''Returns a tuple of adjacent cell values (Up,Right,Down,Left)'''	
+	r,c = pixel.y, pixel.x
+	tpadd = lambda a,b: tuple(m+n for m,n in zip(a,b))
+	rs = (-1,0,1,0)
+        cs = (0,1,0,-1)
+	nbrs = [tpadd((r,c),z) for z in zip(rs,cs)]
+	vals = [image[nr][nc] if for (nr,nc) in nbrs]
 	return tuple(up,right,down,left)
 
 def get_alignment_params(image):
@@ -50,8 +55,9 @@ def main():
 	logfile = 'AOC2019_17.log'
 	logging.basicConfig(level = logging.INFO, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 	ASCII_Software = 'AOC2019_17.ini'
-	sw = read_input(ASCII_Software)
-	stream = Intcode(sw) 		#Process ASCII_software through Intcode computer
+	ASCII_Comp = Comp_Intcode(sw_file=ASCII_Software)
+	ASCII_Comp.LOOP_compute_until_output_or_stop(stop_at_each_output=False)
+	stream = ASCII_Comp.memory[:]
 	image = get_image(stream)
 	nodes = find_nodes(image)
 	intersections = get_alignment_params(image)
