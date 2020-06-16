@@ -86,7 +86,10 @@ def main():
     ASCII_Comp.LOOP_compute_until_output_or_stop(stop_at_each_output=False)
     stream = ASCII_Comp.memory[:]
     image = get_image(stream)
-    ((p.check_if_node(image) for p in row) for row in image)
+    pprint([[p.char for p in row] for row in image])
+    pixels = [p for p in IT.chain.from_iterable(image)]
+    for p in pixels:
+        p.check_if_node(image)
     intersections = get_alignment_params(image)
     print(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result
     logging.info(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result
@@ -97,9 +100,13 @@ def test():
     test_input = 'AOC2019_17.test'
     stream = [ord(c) for c in read_input(test_input)]
     image = get_image(stream)
-    ((p.check_if_node(image) for p in row) for row in image)
+    pprint([[p.char for p in row] for row in image])
+    pixels = [p for p in IT.chain.from_iterable(image)]
+    for p in pixels:
+        p.check_if_node(image)
     intersections = get_alignment_params(image)
-    print(f'Calibration is {sum([ap for (pixel,ap) in intersections])}')  #Part A result
+    print(intersections)
+    print(f'Calibration is {sum([ap for (pixel,ap) in intersections])}')  #Part A result: 76
     
 if __name__ == '__main__':
     #main()
