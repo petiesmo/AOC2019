@@ -1,0 +1,42 @@
+class Node():
+    def __init__(self,node_id,row,col):
+        self.node_id = node_id
+        self.row = row
+        self.col = col
+        self.paths = {}
+     
+def build_network(grid):
+    '''Scans grid of pixels row by row, then col by col, looking for 
+    node connections (orthogonal paths only)
+    Returns tuple of nodes with connectivity information in paths dictionary'''
+    ids = IT.count(0)
+    nodes = [Node(next(ids),p.row,p.col) for p in IT.chain.from_iterable(grid)]
+    #Check linkage between adjacent nodes horizontally
+    for i,pixel_row in enumerate(grid):
+	node_row = [n for n in nodes if n.row==i]
+	for n in range(1, len(node_row)):
+            nodeL, nodeR = node_row[n-1], node_row[n]
+            span = pixel_row[nodeL.col+1 : nodeR.col]
+            if all([p.is_scaff for p in span]):
+                nodeL.paths[nodeR.node_id] = (('E',len(span)))
+                nodeR.paths[nodeL.node_id] = (('W',len(span)))
+
+    #Check linkage between adjacent nodes vertically
+    for i,p in enumerate(grid[0]):
+        pixel_col = [row[i] for row in grid]
+        node_col = [n for n in nodes if n.col==i]        
+	for n in range(1, len(node_col)):
+            nodeL, nodeR = node_col[n-1], node_col[n]
+            span = pixel_col[nodeL.col+1 : nodeR.col]
+            if all([p.is_scaff for p in span]):
+                nodeL.paths[nodeR.id] = (('S',len(span)))
+                nodeR.paths[nodeL.id] = (('N',len(span)))
+        
+    return tuple(node_list)
+		
+	
+	
+		
+	
+			
+		
