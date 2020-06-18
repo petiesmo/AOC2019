@@ -86,7 +86,7 @@ def main():
     ASCII_Comp.LOOP_compute_until_output_or_stop(stop_at_each_output=False)
     stream = ASCII_Comp.memory[:]
     image = get_image(stream)
-    pprint([' '.join([p.char for p in row]) for row in image])
+    pprint([''.join([p.char for p in row]) for row in image])
     pixels = [p for p in IT.chain.from_iterable(image)]
     for p in pixels:
         p.check_if_node(image)
