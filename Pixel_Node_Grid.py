@@ -48,17 +48,26 @@ class Node(Pixel):
     #End Node class
 
 class Grid():
-    def __init__(self, rows, cols, origin=(0,0), default=int(0)):
-        self.rows = rows
-        self.cols = cols
-        self.origin = origin    #Translation from row,col to x,y    
-        self.array = [[default for c in cols] for r in rows]
+    def __init__(self, pixels, xyorigin=(0,0)):
+        self.pixels = pixels    #Object array 
+        self.xyorigin = xyorigin    #Tracks translation from row,col to x,y    
+        self.nodes = []
+        self.paths = []
+    
+    @property
+    def array(self):
+        a,b,c,d = extents(self)
+        return [[0 for p in row] for row in self]
     
     @property    
     def extents(self):
         ''' Returns a tuple of x,y coordinates defining corners of a bounding box rectangle'''
-        xmin,xmax = -self.origin[1], self.cols
-        ymin,ymax = self.rows, self.rows
+        xmin = min([p.x for p in pixels])
+        xmax = max([p.x for p in pixels])
+        cols = xmax - xmin
+        ymin = min([p.y for p in pixels])
+        ymax = max([p.y for p in pixels])
+        rows = ymax - ymin
         return tuple((xmin,ymax),(xmax,ymin)) 
     
     def pad_grid(self,_x,x,_y,y):
@@ -83,8 +92,8 @@ class Grid():
         ids = IT.count(0)
         return [Node(next(ids), p.x, p.y) for p in pixels if p.is_node]
 
-    @staticmethod
-    def build_network(grid):
+    
+    def find_paths(self):
         '''Scans a grid of objects row by row, then col by col, looking for 
         node connections (orthogonal paths only)
         Returns tuple of nodes + dict of paths'''
