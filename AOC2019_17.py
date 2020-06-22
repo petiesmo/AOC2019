@@ -93,7 +93,25 @@ def main():
     intersections = get_alignment_params(image)
     print(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result
     logging.info(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result: 3336
-                  
+
+class ASCII_Comp(Comp_Intcode):
+    
+    def __init_(self, sw):
+        self.super.__init__(sw_file = sw)
+    
+    def switch_ASCII_mode(movement = False):
+        self.sw[0] = XX if movement is True else XX
+        print(f'ASCII mode successfully switched to {self.sw[0]}')
+        return self.sw[0]
+    
+    def input_value_generator(self):
+        
+        return something
+     
+def main2():
+    ASCII_Software = 'AOC2019_17.ini'
+    
+     
 def test():
     logfile = 'AOC2019_17Test.log'
     logging.basicConfig(level=logging.DEBUG, filename=logfile, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
