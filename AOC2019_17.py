@@ -9,43 +9,26 @@ Part B:
 X = Robot falls into space
 '''
 from IntcodeComp import Comp_Intcode 
-import logging
-from collections import namedtuple
 from pprint import pprint
 import itertools as IT
 
-class Pixel():
-    robot = '<^>v'
-    scaffold = '#O' + robot
+from Pixel_Node_Grid import Pixel,Node,Grid
+
+class ASCII_Comp(Comp_Intcode):
     
-    def __init__(self, x, y, char):
-        self.x = x
-        self.y = y
-        self.char = char
-        self.is_node = False
-        self.is_cross = False
-        self.is_corner = False
-        self.nbrs = ()
+    def __init_(self, sw):
+        self.super.__init__(sw_file = sw)
     
-    def __repr__(self):
-        return f'Pixel(x = {self.x}, y = {self.y}, char = {self.char})'
-
-    @property
-    def is_scaff(self):
-        return True if self.char in self.scaffold else False
-
-    def check_if_node(self, grid):
-        rows, cols = len(grid), len(grid[0])
-        in_grid = lambda r,c: (r in range(rows)) and (c in range(cols)) 
-
-        self.nbrs = get_nbrs(self.y, self.x)
-        nbr_vals = [grid[nr][nc].char if in_grid(nr,nc) else 'NaN' for (nr,nc) in self.nbrs]
-        
-        self.is_cross = self.is_scaff and all([v in self.scaffold for v in nbr_vals])
-        self.is_corner = self.is_scaff and not self.is_cross and any([v in self.scaffold and v==nbr_vals[i-1] for i,v in enumerate(nbr_vals)])
-        self.is_node = self.is_cross or self.is_corner
-        logging.debug(f'(self.y,self.x) N,+,L = {self.is_node, self.is_cross, self.is_corner}')
-        return self.is_node
+    def switch_ASCII_mode(movement=False):
+        self.sw[0] = XX if movement is True else XX
+        print(f'ASCII mode successfully switched to {self.sw[0]}')
+        return self.sw[0]
+    
+    def input_value_generator(self):
+        ''' Overrides parent class function to provide specific inputs to the Intcode Computer
+        For ASCII Comp, these inputs are program sequences XXXYYYZZZ'''
+        something = 0
+        return something
 
 def get_image(stream):
     ''' Runs the input software into the Intcode computer, reads output stream,
@@ -57,16 +40,7 @@ def get_image(stream):
            for irow,row in enumerate(screen)]
     #logging.debug(pixels[:][:])
     return tuple((tuple(line) for line in pixels))
-
-def get_nbrs(row,col):
-        '''Returns a tuple of adjacent cell values (Up,Right,Down,Left)
-            Assumes origin is at Upper Left'''  
-        tpadd = lambda a,b: tuple(m+n for m,n in zip(a,b))
-        delr = (-1,0,1,0)
-        delc = (0,1,0,-1)
-        nbrs = [tpadd((row,col),z) for z in zip(delr,delc)]
-        return tuple(nbrs)  #(up,right,down,left)
-    
+ 
 def get_alignment_params(grid):
     '''Finds intersections and returns tuple of (Pixel, AlignParam) pairs'''
     return tuple([(pixel, pixel.x*pixel.y) 
@@ -78,9 +52,9 @@ def read_input(file):
         stream = f.read()
     return stream
 
-def main():
-    logfile = 'AOC2019_17.log'
-    logging.basicConfig(level=logging.INFO, file=logfile, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+def mainA():
+    #logfile = 'AOC2019_17.log'
+    #logging.basicConfig(level=logging.INFO, file=logfile, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
     ASCII_Software = 'AOC2019_17.ini'
     ASCII_Comp = Comp_Intcode(sw_file=ASCII_Software)
     ASCII_Comp.LOOP_compute_until_output_or_stop(stop_at_each_output=False)
@@ -93,24 +67,11 @@ def main():
     intersections = get_alignment_params(image)
     print(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result
     logging.info(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result: 3336
-
-class ASCII_Comp(Comp_Intcode):
-    
-    def __init_(self, sw):
-        self.super.__init__(sw_file = sw)
-    
-    def switch_ASCII_mode(movement = False):
-        self.sw[0] = XX if movement is True else XX
-        print(f'ASCII mode successfully switched to {self.sw[0]}')
-        return self.sw[0]
-    
-    def input_value_generator(self):
-        
-        return something
      
-def main2():
+def mainB():
     ASCII_Software = 'AOC2019_17.ini'
-    
+    AC1 = ASCII_Comp(sw_file=ASCII_Software)
+
      
 def test():
     logfile = 'AOC2019_17Test.log'
@@ -125,7 +86,19 @@ def test():
     intersections = get_alignment_params(image)
     print(intersections)
     print(f'Calibration is {sum([ap for (pixel,ap) in intersections])}')  #Part A result: 76
-    
+
+def test2():
+    test_input = '..#..........\n..#..........\n#######...###\n#.#...#...#.#\n#############\n..#...#...#..\n..#####...^..'
+    stream = [ord(c) for c in test_input]
+    image = get_image(stream)
+    pprint([[p.char for p in row] for row in image]) 
+    pixels = [p for p in IT.chain.from_iterable(image)] 
+    for p in pixels:
+        p.check_if_node(image)
+    print(len(pixels))
+    pprint(pixels)
+    nodes, paths = Grid.build_network(image)
+
 if __name__ == '__main__':
-    main()
-    #test()
+    #main()
+    test2()
