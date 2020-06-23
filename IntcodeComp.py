@@ -11,7 +11,6 @@ import sys
 
 #logfile = 'C:\\Reports\\AOC197.log'
 
-
 class Comp_Intcode:
     '''
     Core methods and constants for the Intcode computer. 

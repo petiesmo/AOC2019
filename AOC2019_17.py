@@ -12,30 +12,53 @@ from IntcodeComp import Comp_Intcode
 from pprint import pprint
 import itertools as IT
 
-from Pixel_Node_Grid import Pixel,Node,Grid
+from Point_Node_Grid import Point,Node,Grid
+
+class Pixel(Point):
+    robot = '<^>v'
+    scaffold = '#O' + robot
+    
+    def __init__(self, x, y, char):
+        super().__init__(x,y,state=char)
+
+    @property
+    def is_scaff(self):
+        return (self.char in self.scaffold)
+    
+    #End class Pixel
 
 class ASCII_Comp(Comp_Intcode):
     
     def __init_(self, sw):
-        self.super.__init__(sw_file = sw)
-    
+        super().__init__(sw_file = sw)
+        self.programs = {1: None, 2: None, 3: None}
+        
+        
     def switch_ASCII_mode(movement=False):
         self.sw[0] = XX if movement is True else XX
+        self.MANUAL_INPUT = False
         print(f'ASCII mode successfully switched to {self.sw[0]}')
         return self.sw[0]
+        
+    def convert_program(program):
+        ascii_program = []
+        for inst in program:
+            ascii_program.extend(ord(inst),ord(','))
+        return ascii_program
     
     def input_value_generator(self):
         ''' Overrides parent class function to provide specific inputs to the Intcode Computer
         For ASCII Comp, these inputs are program sequences XXXYYYZZZ'''
         something = 0
         return something
-
+    #End class ASCII
+    
 def get_image(stream):
     ''' Runs the input software into the Intcode computer, reads output stream,
     and stores data for each new Pixel object
     Returns an array (tuple of tuples) of Pixel objects'''
     screen = ''.join(chr(p) for p in stream).rstrip('\n').splitlines()
-    pixels = [[Pixel(jcol,irow,p) 
+    pixels = [[Point(jcol,irow,p) 
            for jcol,p in enumerate(row)] 
            for irow,row in enumerate(screen)]
     #logging.debug(pixels[:][:])
