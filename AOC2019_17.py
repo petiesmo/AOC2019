@@ -87,6 +87,16 @@ def read_input(file):
         stream = f.read()
     return stream
 
+def find_path(nodes):
+	network = nodes[:]
+	if any([len(e.nbrs)== 0 for e in network]): 
+		print('Isolated node found')
+		break
+
+	ends = [e for e in network if len(e.nbrs == 1]
+	
+	
+
 def mainA():
     #logfile = 'AOC2019_17.log'
     #logging.basicConfig(level=logging.INFO, file=logfile, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -101,7 +111,8 @@ def mainA():
     intersections = get_alignment_params(nodes)
     print(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result
     #logging.info(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result: 3336
-     
+
+
 def mainB():
     ASCII_Software = 'AOC2019_17.ini'
     AC1 = ASCII_Comp(sw_file=ASCII_Software)
@@ -112,6 +123,11 @@ def mainB():
     nodes = get_nodes(image)
     pprint(nodes)
 
+#find_path
+#make_directions
+#make_movement_programs
+#make_main_movement_routine
+#run_MMR
 
 def test():
     logfile = 'AOC2019_17Test.log'
