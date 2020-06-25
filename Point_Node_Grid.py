@@ -38,7 +38,7 @@ class Point():
 class Node(Point):
     '''Special type of Point, with linkage to other nodes in a network'''
     def __init__(self, node_id, x, y, state=False):
-        super().__init__(x, y, state=state, node_id=node_id, nbrs=[], paths=[])
+        super().__init__(x, y, state=state, node_id=node_id, nbrs=[], paths=[], parent=None)
     
     def __repr__(self):
         return f'Node(id:{self.node_id},x:{self.x}, y:{self.y})'
@@ -52,7 +52,8 @@ class Grid():
     def __init__(self, points, originxy=(0,0)):
         self.points = points           #Object list (can be sparse)
         self.originxy = originxy       #Maintains translation from row,col to x,y
-        self.nodes = [originxy]
+        self.points.append(Point(*self.originxy,state='*'))
+        self.nodes = [Node(0, *originxy, state='*')]
         self.paths = []
     
     @property
@@ -72,7 +73,8 @@ class Grid():
         self.ymin = min([p.y for p in self.points])
         self.ymax = max([p.y for p in self.points])
         self.nrows = self.ymax - self.ymin + 1
-        self.originrc = tpadd((-self.xmin,-self.ymin), self.originxy)
+        x0,y0 = self.originxy
+        self.originrc = (y0-self.ymin,x0-self.xmin)
         return None 
         
     def convert_to_rc(self, x, y):
@@ -139,11 +141,13 @@ class Grid():
 
 
 def test():
-    points = [Point(x,y,'.') for y in range(0,6,2) for x in range(0,8,2)]
-    pprint(points)
+    points = [Point(x,y,'.') for y in range(-6,2,1) for x in range(-2,8,1)]
+    #pprint(points)
 
     grid = Grid(points)
-    pprint(grid.array)
+    image = grid.array
+    print(grid.originxy, grid.originrc)
+    pprint([[p.state for p in row] for row in image])
 
 if __name__ == "__main__":
     test()    

@@ -12,14 +12,14 @@ from IntcodeComp import Comp_Intcode
 from pprint import pprint
 import itertools as IT
 
-from Point_Node_Grid import Point,Node,Grid
+from Point_Node_Grid import Point, Node, Grid, get_nbrs
 
 class Pixel(Point):
     robot = '<^>v'
     scaffold = '#O' + robot
     
     def __init__(self, x, y, char):
-        super().__init__(x,y,state=char)
+        super().__init__(x, y, state=char)
 
     @property
     def is_scaff(self):
@@ -29,10 +29,9 @@ class Pixel(Point):
 
 class ASCII_Comp(Comp_Intcode):
     
-    def __init_(self, sw):
-        super().__init__(sw_file = sw)
-        self.programs = {1: None, 2: None, 3: None}
-        
+    def __init_(self, sw_file):
+        super().__init__(sw_file = sw_file)
+        self.user_programs = {1: None, 2: None, 3: None}
         
     def switch_ASCII_mode(movement=False):
         self.sw[0] = XX if movement is True else XX
@@ -63,12 +62,25 @@ def get_image(stream):
            for irow,row in enumerate(screen)]
     #logging.debug(pixels[:][:])
     return tuple((tuple(line) for line in pixels))
- 
-def get_alignment_params(grid):
+
+def get_nodes(image, state_criteria='*'):
+    ids = IT.count(0)
+    return [Node(next(ids),p.x,p.y,state='N') 
+            for p in IT.chain.from_iterable(image)
+            if p.state == state_criteria]
+
+def get_node_nbrs(nodes):
+    for n in nodes:
+        nbr_coords = get_nbrs(n.y, n.x)
+        n.nbrs = [nbr for nbr in nodes if (nbr.y, nbr.x) in nbr_coords]
+    return None
+
+
+def get_alignment_params(nodes):
     '''Finds intersections and returns tuple of (Pixel, AlignParam) pairs'''
-    return tuple([(pixel, pixel.x*pixel.y) 
-                    for pixel in IT.chain.from_iterable(grid) 
-                    if pixel.is_cross is True])
+    return tuple([(n, n.x*n.y) 
+                   for n in nodes
+                   if len(n.nbrs) == 4])
     
 def read_input(file):
     with open(file,'r') as f:
@@ -83,19 +95,24 @@ def mainA():
     ASCII_Comp.LOOP_compute_until_output_or_stop(stop_at_each_output=False)
     stream = ASCII_Comp.memory[:]
     image = get_image(stream)
-    pprint([''.join([p.char for p in row]) for row in image])
-    pixels = [p for p in IT.chain.from_iterable(image)]
-    for p in pixels:
-        p.check_if_node(image)
-    intersections = get_alignment_params(image)
+    pprint([''.join([p.state for p in row]) for row in image])
+    nodes = get_nodes(image, '#')
+    get_node_nbrs(nodes)
+    intersections = get_alignment_params(nodes)
     print(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result
-    logging.info(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result: 3336
+    #logging.info(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result: 3336
      
 def mainB():
     ASCII_Software = 'AOC2019_17.ini'
     AC1 = ASCII_Comp(sw_file=ASCII_Software)
+    AC1.LOOP_compute_until_output_or_stop(stop_at_each_output=False)
+    data_stream = AC1.memory[:]
+    image = get_image(data_stream)
+    pprint([''.join([p.state for p in row]) for row in image]) 
+    nodes = get_nodes(image)
+    pprint(nodes)
 
-     
+
 def test():
     logfile = 'AOC2019_17Test.log'
     logging.basicConfig(level=logging.DEBUG, filename=logfile, format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -112,16 +129,16 @@ def test():
 
 def test2():
     test_input = '..#..........\n..#..........\n#######...###\n#.#...#...#.#\n#############\n..#...#...#..\n..#####...^..'
-    stream = [ord(c) for c in test_input]
-    image = get_image(stream)
-    pprint([[p.char for p in row] for row in image]) 
-    pixels = [p for p in IT.chain.from_iterable(image)] 
-    for p in pixels:
-        p.check_if_node(image)
-    print(len(pixels))
-    pprint(pixels)
-    nodes, paths = Grid.build_network(image)
+    data_stream = [ord(c) for c in test_input]
+    image = get_image(data_stream)
+    pprint([''.join([p.state for p in row]) for row in image]) 
+    nodes = get_nodes(image)
+    pprint(nodes)
+    get_node_nbrs(nodes)
+    print([(node.y,node.x,len(node.nbrs)) for node in nodes])
 
 if __name__ == '__main__':
-    #main()
-    test2()
+    #test1()
+    mainA()
+    #test2()
+    #mainB()
