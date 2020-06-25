@@ -23,7 +23,7 @@ class Pixel(Point):
 
     @property
     def is_scaff(self):
-        return (self.char in self.scaffold)
+        return (self.state in self.scaffold)
     
     #End class Pixel
 
