@@ -87,13 +87,24 @@ def read_input(file):
         stream = f.read()
     return stream
 
-def find_path(nodes):
+def find_path(nodes, startpt):
 	network = nodes[:]
 	if any([len(e.nbrs)== 0 for e in network]): 
 		print('Isolated node found')
 		break
+        
+    endpts = [e for e in network if len(e.nbrs) == 1]
+    if len(endpts) > 2:
+        print('More than one start/end')
+    
+    opennodes = network[:]
+    closednodes = []
+    current_node = startpt
+    previous_node = None
+    while current_node != end_node
+        current_node.parent = previous_node
+        previous_node, current_node = current_node, current_node.nbrs
 
-	ends = [e for e in network if len(e.nbrs == 1]
 	
 	
 
@@ -122,8 +133,8 @@ def mainB():
     pprint([''.join([p.state for p in row]) for row in image]) 
     nodes = get_nodes(image)
     pprint(nodes)
-
-#find_path
+    robot_pos = [(p.y,p.x) for p in image if p.state in Pixel.robot]
+    path = find_path(nodes,robot_pos)
 #make_directions
 #make_movement_programs
 #make_main_movement_routine
