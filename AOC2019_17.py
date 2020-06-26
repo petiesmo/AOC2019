@@ -27,6 +27,28 @@ class Pixel(Point):
     
     #End class Pixel
 
+class robot():
+	def __init__(self, x, y, hdg):
+		self.x = x
+		self.y = y
+		self.hdg = hdg
+		path = []
+		visited = []
+		
+	def move(self):
+		self.visited.append(current_node)
+		current_node = new_node
+		self.path.append(step_hdg)
+
+		return x,y
+
+	def turn(self):
+		path.append('L' or 'R')
+		return new_hdg
+
+	def choose_next:
+		
+
 class ASCII_Comp(Comp_Intcode):
     
     def __init_(self, sw_file):
@@ -43,7 +65,7 @@ class ASCII_Comp(Comp_Intcode):
         ascii_program = []
         for inst in program:
             ascii_program.extend(ord(inst),ord(','))
-        return ascii_program
+        return ascii_program[:-1]
     
     def input_value_generator(self):
         ''' Overrides parent class function to provide specific inputs to the Intcode Computer
@@ -91,7 +113,6 @@ def find_path(nodes, startpt):
 	network = nodes[:]
 	if any([len(e.nbrs)== 0 for e in network]): 
 		print('Isolated node found')
-		break
         
     endpts = [e for e in network if len(e.nbrs) == 1]
     if len(endpts) > 2:
@@ -105,7 +126,8 @@ def find_path(nodes, startpt):
         current_node.parent = previous_node
         previous_node, current_node = current_node, current_node.nbrs
 
-	
+	for nbr in current_node.nbrs:
+		if nbr in opennodes
 	
 
 def mainA():
