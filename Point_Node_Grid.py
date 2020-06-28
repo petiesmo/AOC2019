@@ -38,7 +38,7 @@ class Point():
 class Node(Point):
     '''Special type of Point, with linkage to other nodes in a network'''
     def __init__(self, node_id, x, y, state=False):
-        super().__init__(x, y, state=state, node_id=node_id, nbrs=[], parent=None)
+        super().__init__(x, y, state=state, node_id=node_id, nbrs=[], paths=[], parent=None)
     
     def __repr__(self):
         return f'Node(id:{self.node_id},x:{self.x}, y:{self.y})'
@@ -52,7 +52,8 @@ class Grid():
     def __init__(self, points, originxy=(0,0)):
         self.points = points           #Object list (can be sparse)
         self.originxy = originxy       #Maintains translation from row,col to x,y
-        self.nodes = [originxy]
+        self.points.append(Point(*self.originxy,state='*'))
+        self.nodes = [Node(0, *originxy, state='*')]
         self.paths = []
     
     @property
@@ -72,7 +73,8 @@ class Grid():
         self.ymin = min([p.y for p in self.points])
         self.ymax = max([p.y for p in self.points])
         self.nrows = self.ymax - self.ymin + 1
-        self.originrc = tpadd((-self.xmin,-self.ymin), self.originxy)
+        x0,y0 = self.originxy
+        self.originrc = (y0-self.ymin,x0-self.xmin)
         return None 
         
     def convert_to_rc(self, x, y):
@@ -94,22 +96,58 @@ class Grid():
         Modifies Point object is_node value
         Returns a list of Node objects'''
         in_grid = lambda r,c: (r in range(self.nrows)) and (c in range(self.ncols)) 
+        points = [p for p in IT.chain.from_iterable(self)]
+        for p in points:
+            nbr_vals = [self.array[nr][nc].state if in_grid(nr,nc) else 'NaN' for (nr,nc) in p.nbrs]
+            if p.is_scaff:
+                #p.is_path = nbr_vals[0] == nbr_vals[2] and nbr_vals[1] == nbr_vals[3] and nbr_vals[0] != nbr_vals[1]
+                p.is_node = not(is_path)
         ids = IT.count(0)
-        self.nodes = [Node(next(ids), p.x, p.y) for p in self.points]
-        for n in self.nodes:
-            n.nbrs = [self.array[nr][nc] if in_grid(nr,nc) and self.array[nr,nc].is_node else 'NaN' for (nr,nc) in p.nbrs]
-        
-        return 
+        return [Node(next(ids), p.x, p.y) for p in points if p.is_node]
+
+    
+    def find_paths(self):
+        '''Scans a grid of objects row by row, then col by col, looking for 
+        node connections (orthogonal paths only)
+        Returns tuple of nodes + dict of paths'''
+        links = IT.count(0)
+        grid = self.array
+        #Check linkage between adjacent nodes horizontally
+        for i, point_row in enumerate(grid):
+            node_row = [n for n in nodes if n.row == i]
+            for n in range(1, len(node_row)):
+                nodeL, nodeR = node_row[n-1], node_row[n]
+                span = point_row[nodeL.col+1 : nodeR.col]
+                if all([p.is_scaff for p in span]):
+                    link = next(links)
+                    paths[link] = ('H', len(span), nodeL.node_id, nodeR.node_id)
+                    nodeL.paths.append((link, len(span), nodeR.node_id))
+                    nodeR.paths.append((link, len(span), nodeL.node_id))
+
+        #Check linkage between adjacent nodes vertically
+        for i,p in enumerate(grid[0]):
+            point_col = [row[i] for row in grid]
+            node_col = [n for n in nodes if n.col == i]        
+            for n in range(1, len(node_col)):
+                nodeL, nodeR = node_col[n-1], node_col[n]
+                span = point_col[nodeL.col+1 : nodeR.col]
+                if all([p.is_scaff for p in span]):
+                    link = next(links)
+                    paths[link] = ('V', len(span), nodeL.node_id, nodeR.node_id)
+                    nodeL.paths.append((link, len(span), nodeR.node_id))
+                    nodeR.paths.append((link, len(span), nodeL.node_id))
+        return tuple(nodes), paths
     #End class Grid
 
 
 def test():
-    points = [Point(x,y,'.') for y in range(-6,4,2) for x in range(-2,8,2)]
-    pprint(points)
+    points = [Point(x,y,'.') for y in range(-6,2,1) for x in range(-2,8,1)]
+    #pprint(points)
 
     grid = Grid(points)
-    pprint(grid.array)
+    image = grid.array
     print(grid.originxy, grid.originrc)
+    pprint([[p.state for p in row] for row in image])
 
 if __name__ == "__main__":
     test()    
