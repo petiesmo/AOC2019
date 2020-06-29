@@ -9,10 +9,18 @@ Part B:
 X = Robot falls into space
 '''
 from IntcodeComp import Comp_Intcode 
+from Collections import deque
 from pprint import pprint
 import itertools as IT
+from enum import Emum
 
-from Point_Node_Grid import Point, Node, Grid, get_nbrs
+from Point_Node_Grid import Point, Node, Grid, get_nbrs, tpadd
+
+North = Point(0,1,"^")
+East = Point(1,0,'>')
+South = Point(0,-1,'v')
+West = Point(-1,0,'<')
+hdg = deque([North, East, South, West])
 
 class Pixel(Point):
     robot = '<^>v'
@@ -28,21 +36,43 @@ class Pixel(Point):
     #End class Pixel
 
 class robot():
-	def __init__(self, x, y, hdg):
+	def __init__(self, x, y, hd):
 		self.x = x
 		self.y = y
-		self.hdg = hdg
+		self.hd = hd	#NESW
 		path = []
 		visited = []
 		
-	def move(self):
+	@property
+	def pos(self)
+		return tuple(self.x, self.y)
+
+	def GoTo(self, grid, dest):
+		origin = self.pos
+		current = grid[self.y][self.x]
+		certain = [origin]
+		candidates = 
+		while dest not in path:
+			#Test fwd
+			testxy = tpadd(self.pos,self.hdg)
+
+			#Test L
+			hdg.rotate()
+			hdg[0]
+			if teatxy is node:
+				
+			#Test R
+
+	
+	def move_fwd(self):
 		self.visited.append(current_node)
 		current_node = new_node
-		self.path.append(step_hdg)
-
-		return x,y
+		self.path.append(self.hdg)
+		self.x, self.y = new.x, new.y
+		return None
 
 	def turn(self):
+		
 		path.append('L' or 'R')
 		return new_hdg
 
@@ -53,11 +83,16 @@ class ASCII_Comp(Comp_Intcode):
     
     def __init_(self, sw_file):
         super().__init__(sw_file = sw_file)
-        self.user_programs = {1: None, 2: None, 3: None}
+        self.user_programs = {
+			'A': None, #End with \n(10)
+			'B': None, 
+			'C': None}
+		
+		self.input_string = IT.chain.fromiterable(self.user_programs.values())
         
-    def switch_ASCII_mode(movement=False):
-        self.sw[0] = XX if movement is True else XX
-        self.MANUAL_INPUT = False
+    def set_mode_movement(self,move_mode=True):
+        self.sw[0] = 2 if move_mode is True else 1
+        self.MANUAL_INPUT = not move_mode 
         print(f'ASCII mode successfully switched to {self.sw[0]}')
         return self.sw[0]
         
