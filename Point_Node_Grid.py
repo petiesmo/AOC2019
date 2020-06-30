@@ -31,6 +31,9 @@ class Point():
     
     def __repr__(self):
         return f'Point(x={self.x}, y={self.y}, state={self.state})'
+
+	def __add__(self, other):
+		return (self.x + other.x, self.y + other.y)
         
     #End class Point
 
