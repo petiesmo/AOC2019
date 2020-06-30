@@ -40,39 +40,40 @@ class Node(Point):
     #End class Node
 
 
-def check_path(grid, current_node, parent, destination):
+def check_path(grid, candidates, current_node, parent, destination):
     cx, cy = current_node.x, current_node.y
     if current_node == destination:
         return [destination]
     
-    valid_nbrs = set([nbr for nbr in [grid[ny][nx] for (ny,nx) in get_nbrs(cy,cx)] if type(nbr) is Node]) - set(parent)
+    valid_nbrs = {nbr for nbr in [grid[ny][nx] for (ny,nx) in get_nbrs(cy,cx)] 
+                    if type(nbr) is Node and nbr in candidates} - {parent}
     print(f'Cnode {current_node}, Nb: {valid_nbrs}')
     if not valid_nbrs:
+        candidates.remove(current_node)
         return None
     else:
         paths = []
         for nbr in valid_nbrs:				
-            current_path = check_path(grid, nbr, current_node, destination)		#Recursion
-            if destination in current_path:
-                paths.append(current_path)    
-            best_path = paths[index(min([len(p) for path in paths]))]
+            current_path = check_path(grid, candidates, nbr, current_node, destination)		#Recursion
+            if current_path:
+                    if destination in current_path:
+                        paths.append(current_path)    
+            best_path = min(paths, default=[], key=lambda x: len(x) if len(x)>0 else None)
+            candidates.remove(current_node)
         return [] if not best_path else best_path.append(current_node)
 
 
-grid = [['.' for p in range(5)] for r in range(5)]
-nodes = [(0,0), (0,1), (1,1), (1,2), (2,2), (3,2), (3,3), (3,4), (4,4)]
+grid = [['.' for p in range(6)] for r in range(6)]
+nodes = [(0,0), (0,1), (0,2), (1,1), (1,2), (2,2), (3,2), (3,3), (2,4), (3,4), (4,4)]
 nids = IT.count(0)
 for node in nodes:
-	nx, ny = node
-	grid[ny][nx] = Node(nx,ny,next(nids))
-
-
+    nx, ny = node
+    grid[ny][nx] = Node(nx, ny, next(nids))
+candidates = [spot for spot in [grid[ny][nx] for nx in range(6) for ny in range(6)] if type(spot) is Node]
+print(candidates)
 from pprint import pprint
 pprint(grid)
 
-
-best_path = check_path(grid, grid[0][0], '_noparent', grid[4][4])
-print(path)
-
-set(nbr for nbr in if type(nbr) is Node) - set(parent)
+best_path = check_path(grid, candidates, grid[0][0], '_noparent', grid[4][4])
+print(best_path)
 
