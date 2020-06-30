@@ -40,10 +40,11 @@ class Node(Point):
     #End class Node
 
 
-def check_path(grid, candidates, current_node, parent, destination):
+def check_path(grid, current_node, parent, this_path, destination):
     cx, cy = current_node.x, current_node.y
-    if current_node == destination:
-        return [destination]
+    path.append(current_node)
+	if current_node == destination:
+        return True
     
     valid_nbrs = {nbr for nbr in [grid[ny][nx] for (ny,nx) in get_nbrs(cy,cx)] 
                     if type(nbr) is Node and nbr in candidates} - {parent}
@@ -52,15 +53,15 @@ def check_path(grid, candidates, current_node, parent, destination):
         candidates.remove(current_node)
         return None
     else:
-        paths = []
+       
         for nbr in valid_nbrs:				
-            current_path = check_path(grid, candidates, nbr, current_node, destination)		#Recursion
+            current_path = check_path(grid, nbr, current_node, this_path, destination)		#Recursion
             if current_path:
                     if destination in current_path:
                         paths.append(current_path)    
-            best_path = min(paths, default=[], key=lambda x: len(x) if len(x)>0 else None)
-            candidates.remove(current_node)
-        return [] if not best_path else best_path.append(current_node)
+            best_path = min(paths, default=[], key=lambda x: len(x))
+            
+        return best_path
 
 
 grid = [['.' for p in range(6)] for r in range(6)]
@@ -70,10 +71,10 @@ for node in nodes:
     nx, ny = node
     grid[ny][nx] = Node(nx, ny, next(nids))
 candidates = [spot for spot in [grid[ny][nx] for nx in range(6) for ny in range(6)] if type(spot) is Node]
-print(candidates)
+all_paths = []
 from pprint import pprint
 pprint(grid)
 
-best_path = check_path(grid, candidates, grid[0][0], '_noparent', grid[4][4])
+best_path = check_path(grid, candidates, grid[0][0], '_noparent', [], grid[4][4])
 print(best_path)
 
