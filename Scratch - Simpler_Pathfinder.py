@@ -48,7 +48,7 @@ def check_path(grid, current_node, parent, destination):
         valid_paths.append(test_path)
         return True
     valid_nbrs = {nbr for nbr in [grid[ny][nx] for (ny,nx) in get_nbrs(cy,cx)] 
-                    if type(nbr) is Node} - set(test_path)
+                    if type(nbr) is Node}
     print(f'Cnode {current_node}, Nb: {valid_nbrs}')
     if not valid_nbrs:
         candidates.remove(current_node)
@@ -57,6 +57,7 @@ def check_path(grid, current_node, parent, destination):
     for nbr in valid_nbrs:				
         if check_path(grid, nbr, current_node, destination):    #Recursion
             break		
+    test_path.remove(current_node)
     candidates.remove(current_node)
     return None
 
