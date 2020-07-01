@@ -48,7 +48,7 @@ def check_path(grid, current_node, parent, destination):
         valid_paths.append(test_path)
         return True
     valid_nbrs = {nbr for nbr in [grid[ny][nx] for (ny,nx) in get_nbrs(cy,cx)] 
-                    if type(nbr) is Node}
+                    if type(nbr) is Node} - set(test_path)
     print(f'Cnode {current_node}, Nb: {valid_nbrs}')
     if not valid_nbrs:
         candidates.remove(current_node)
@@ -95,7 +95,7 @@ candidates = set([n for n in IT.chain.from_iterable(nodes) if type(n) is Node])
 valid_paths = []
 while candidates:    
     test_path = []
-    check_path(grid, nodes[1][1], '_noparent', nodes[6][6])
+    check_path(nodes, nodes[1][1], '_noparent', nodes[6][6])
  
 best_path = min(valid_paths, key=len, default='No valid paths')
 print(best_path)
