@@ -40,25 +40,23 @@ class Node(Point):
     #End class Node
 
 
-def check_path(grid, current_node, parent, destination):
+def check_path(grid, current_node, parent_path, destination):
     cx, cy = current_node.x, current_node.y
-      
+    if current_node in parent_path:
+        return False    #Loop
+    this_path = list(parent_path)
+    this_path.append(current_node)
+    #print(this_path)
     if current_node == destination:
-        test_path.append(current_node)
-        valid_paths.append(test_path)
+        valid_paths.append(this_path)
+        print(valid_paths)
         return True
-    valid_nbrs = {nbr for nbr in [grid[ny][nx] for (ny,nx) in get_nbrs(cy,cx)] 
-                    if type(nbr) is Node} - set(test_path)
-    print(f'Cnode {current_node}, Nb: {valid_nbrs}')
+    valid_nbrs = {nbr for nbr in [grid[ny][nx] for (ny,nx) in get_nbrs(cy,cx)] if type(nbr) is Node} - set(this_path)
+    #print(f'Cnode {current_node}, Nb: {valid_nbrs}')
     if not valid_nbrs:
-        candidates.remove(current_node)
         return False    # Dead End
-    test_path.append(current_node)
     for nbr in valid_nbrs:				
-        if check_path(grid, nbr, current_node, destination):    #Recursion
-            break		
-    test_path.remove(current_node)
-    candidates.remove(current_node)
+        check_path(grid, nbr, tuple(this_path), destination)    #Recursion
     return None
 
 def get_image(stream):
@@ -76,8 +74,8 @@ test_grid ='''........
 .XXXXXX.
 .X....X.
 .XXXXXX.
-.X..X...
-..XXX...
+.X..X.X.
+..XXX.X.
 ....XXX.
 ........'''
 
@@ -86,17 +84,16 @@ test_grid ='''........
 
 grid = get_image(test_grid)
 from pprint import pprint
-pprint(grid)
+#pprint(grid)
 nids = IT.count(0)
 nodes = [[Node(p.x, p.y, next(nids)) if p.state == 'X' else p for p in row ] for row in grid]
-pprint(nodes)
-candidates = set([n for n in IT.chain.from_iterable(nodes) if type(n) is Node])
+#pprint(nodes)
 
 valid_paths = []
-while candidates:    
-    test_path = []
-    check_path(nodes, nodes[1][1], '_noparent', nodes[6][6])
+check_path(nodes, nodes[1][1], tuple(), nodes[6][6])
  
 best_path = min(valid_paths, key=len, default='No valid paths')
-print(best_path)
+pprint(f'Best Path is: {best_path}')
+pprint([n.node_id for n in best_path])
+pprint([[n.node_id for n in path] for path in valid_paths])
 

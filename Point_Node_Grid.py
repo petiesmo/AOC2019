@@ -34,7 +34,15 @@ class Point():
 
 	def __add__(self, other):
 		return (self.x + other.x, self.y + other.y)
-        
+
+    def __sub__(self, other):
+        return (self.x - other.x, self.y - other.y)
+
+    def dist(self, other, crow=True):
+        if crow:
+            return ((self.x-other.x)**2 + (self.y - other.y)**2)**.5
+        else: #Manhattan
+            return abs(self.x-other.x) + abs(self.y-other.y)         
     #End class Point
 
 
