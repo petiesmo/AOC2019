@@ -20,7 +20,7 @@ North = Point(0,1,"^")
 East = Point(1,0,'>')
 South = Point(0,-1,'v')
 West = Point(-1,0,'<')
-hdg = deque([North, East, South, West])
+hdgs = deque([North, East, South, West])
 
 class Pixel(Point):
     robot = '<^>v'
@@ -36,59 +36,56 @@ class Pixel(Point):
     #End class Pixel
 
 class robot():
-	def __init__(self, x, y, hd):
-		self.x = x
-		self.y = y
-		self.hd = hd	#NESW
-		path = []
-		visited = []
-		
-	@property
-	def pos(self)
-		return tuple(self.x, self.y)
+    def __init__(self, x, y, hd):
+        self.x = x
+        self.y = y
+        self.hd = hd	#NESW
+        path = []
+        visited = []
 
-	def GoTo(self, grid, dest):
-		origin = self.pos
-		current = grid[self.y][self.x]
-		certain = [origin]
-		candidates = 
-		while dest not in path:
-			#Test fwd
-			testxy = tpadd(self.pos,self.hdg)
+    @property
+    def pos(self)
+        return tuple(self.x, self.y)
 
-			#Test L
-			hdg.rotate()
-			hdg[0]
-			if teatxy is node:
-				
-			#Test R
+    def GoTo(self, grid, dest):
+        origin = self.pos
+        current = grid[self.y][self.x]
+        certain = [origin]
+        candidates = 
+        while dest not in path:
+            #Test fwd
+            testxy = tpadd(self.pos,self.hdg)
 
-	
-	def move_fwd(self):
-		self.visited.append(current_node)
-		current_node = new_node
-		self.path.append(self.hdg)
-		self.x, self.y = new.x, new.y
-		return None
+            #Test L
+            hdgs.rotate()
+            hdgs[0]
+            if teatxy is node:
+                
+            #Test R
 
-	def turn(self):
-		
-		path.append('L' or 'R')
-		return new_hdg
+    def move_fwd(self):
+        self.visited.append(current_node)
+        current_node = new_node
+        self.path.append(self.hdg)
+        self.x, self.y = new.x, new.y
+        return None
 
-	def choose_next:
-		
+    def turn(self):
+        path.append('L' or 'R')
+        return new_hdg
+
+    def choose_next:
+
 
 class ASCII_Comp(Comp_Intcode):
-    
     def __init_(self, sw_file):
         super().__init__(sw_file = sw_file)
         self.user_programs = {
-			'A': None, #End with \n(10)
-			'B': None, 
-			'C': None}
-		
-		self.input_string = IT.chain.fromiterable(self.user_programs.values())
+            'A': None, #End with \n(10)
+            'B': None, 
+            'C': None}
+
+        self.input_string = IT.chain.fromiterable(self.user_programs.values())
         
     def set_mode_movement(self,move_mode=True):
         self.sw[0] = 2 if move_mode is True else 1
@@ -132,37 +129,15 @@ def get_node_nbrs(nodes):
         n.nbrs = [nbr for nbr in nodes if (nbr.y, nbr.x) in nbr_coords]
     return None
 
-
 def get_alignment_params(nodes):
     '''Finds intersections and returns tuple of (Pixel, AlignParam) pairs'''
-    return tuple([(n, n.x*n.y) 
-                   for n in nodes
-                   if len(n.nbrs) == 4])
+    return tuple([(n, n.x*n.y) for n in nodes if len(n.nbrs) == 4])
     
 def read_input(file):
     with open(file,'r') as f:
         stream = f.read()
     return stream
 
-def find_path(nodes, startpt):
-	network = nodes[:]
-	if any([len(e.nbrs)== 0 for e in network]): 
-		print('Isolated node found')
-        
-    endpts = [e for e in network if len(e.nbrs) == 1]
-    if len(endpts) > 2:
-        print('More than one start/end')
-    
-    opennodes = network[:]
-    closednodes = []
-    current_node = startpt
-    previous_node = None
-    while current_node != end_node
-        current_node.parent = previous_node
-        previous_node, current_node = current_node, current_node.nbrs
-
-	for nbr in current_node.nbrs:
-		if nbr in opennodes
 	
 
 def mainA():
