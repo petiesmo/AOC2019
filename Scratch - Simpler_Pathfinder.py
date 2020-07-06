@@ -62,12 +62,22 @@ def find_short_path(grid, current_node, parent_path, destination):
     return None
 
 def follow_a_path(self, grid, destination):
-    ''' Robot follows a path
+    ''' Robot method to follow a chalk line path; 
+        Prefers to go forward before looking to turn'''
     not_visited = grid.nodes[:]
     visited = []
     trail = []
-    self.pos
+    self.pos = (self.x, self.y)
     self.hdg
+
+    while not_visited and self.pos not destination:
+        if self.pos + self.hdg == valid_node:
+            visted.append(not_visited.remove(current_node))
+            trail.append('fwd')
+            self.move_fwd() 
+        else:
+            self.turn_left()
+
     
     
 
