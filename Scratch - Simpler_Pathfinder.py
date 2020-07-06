@@ -40,7 +40,9 @@ class Node(Point):
     #End class Node
 
 
-def check_path(grid, current_node, parent_path, destination):
+def find_short_path(grid, current_node, parent_path, destination):
+    ''' Walks through node network to identify: valid paths from A to B.  Does not require that all nodes be visited
+    '''
     cx, cy = current_node.x, current_node.y
     if current_node in parent_path:
         return False    #Loop
@@ -56,11 +58,21 @@ def check_path(grid, current_node, parent_path, destination):
     if not valid_nbrs:
         return False    # Dead End
     for nbr in valid_nbrs:				
-        check_path(grid, nbr, tuple(this_path), destination)    #Recursion
+        find_short_path(grid, nbr, tuple(this_path), destination)    #Recursion
     return None
 
+def follow_a_path(self, grid, destination):
+    ''' Robot follows a path
+    not_visited = grid.nodes[:]
+    visited = []
+    trail = []
+    self.pos
+    self.hdg
+    
+    
+
 def get_image(stream):
-    ''' Runs the input software into the Intcode computer, reads output stream,
+    ''' Reads a text stream,
     and stores data for each new Pixel object
     Returns an array (tuple of tuples) of Pixel objects'''
     screen = stream.rstrip('\n\r').splitlines()
@@ -90,7 +102,7 @@ nodes = [[Node(p.x, p.y, next(nids)) if p.state == 'X' else p for p in row ] for
 #pprint(nodes)
 
 valid_paths = []
-check_path(nodes, nodes[1][1], tuple(), nodes[6][6])
+find_short_path(nodes, nodes[1][1], tuple(), nodes[6][6])
  
 best_path = min(valid_paths, key=len, default='No valid paths')
 pprint(f'Best Path is: {best_path}')

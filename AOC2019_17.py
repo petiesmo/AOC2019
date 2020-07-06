@@ -110,7 +110,7 @@ class ASCII_Comp(Comp_Intcode):
     #End class ASCII
     
 def get_image(stream):
-    ''' Runs the input software into the Intcode computer, reads output stream,
+    ''' Reads a stream of characters,
     and stores data for each new Pixel object
     Returns an array (tuple of tuples) of Pixel objects'''
     screen = ''.join(chr(p) for p in stream).rstrip('\n').splitlines()
