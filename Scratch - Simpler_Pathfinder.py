@@ -70,12 +70,13 @@ def follow_a_path(self, grid, destination):
     self.pos = (self.x, self.y)
     self.hdg
 
-    while not_visited and self.pos not destination:
+    while not_visited and (self.pos not destination):
         if self.pos + self.hdg == valid_node:
             visted.append(not_visited.remove(current_node))
-            trail.append('fwd')
+            trail.append('F')
             self.move_fwd() 
         else:
+            self.trail.append('L')
             self.turn_left()
 
     

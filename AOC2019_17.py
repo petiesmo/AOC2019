@@ -1,12 +1,17 @@
 ''' AOC2019 Day 17 - Set and Forget
 ASCII (Aft Scaffolding and Information Interface)
 Part A: Find alignment parameters of scaffolding intersections
-Part B: 
+Part B: Write program segments A,B,C to navigate robot on all scaffolds
 '''
 ''' Character representations:
 '.' = Space, '#' = Scaffold, 'o' = Intersection
 <,^,>,v = Robot location + direction
 X = Robot falls into space
+'''
+''' Part B program segment requirements:
+Comprised of ASCII characters, representing turns (L/R), fwd steps (integer), commas, and a newline
+3 Segments (A/B/C): No more than 20 characters (including commas, but not newline)
+Main movement routine: Calls A/B/C segments
 '''
 from IntcodeComp import Comp_Intcode 
 from Collections import deque
@@ -74,13 +79,39 @@ class robot():
         path.append('L' or 'R')
         return new_hdg
 
-    def choose_next:
+    def convert_trail(trail):
+        '''Condenses repeated steps in the Trail attribute'''
+        # 3 lefts = 1 right
+        # Fwd, Fwd, Fwd, ....  = Integer
+        short_trail = []
+        tr = (i for i in trail)    
+        a = next(tr)
+        while True:
+            step = [a]
+            b = next(tr)        #FIX THIS - need to exit if LAST
+            while b == step[0]:
+                step.append(b)
+                b = next(tr)
+            n = (step[0],len(step))
+            short_trail.append(n)
+            print(short_trail)
+            a = copy(b)
+        print(short_trail)
+        return(short_trail)
+
+
+                
+
+
+
+        
 
 
 class ASCII_Comp(Comp_Intcode):
     def __init_(self, sw_file):
         super().__init__(sw_file = sw_file)
         self.user_programs = {
+            'MMR': None #Main move routine
             'A': None, #End with \n(10)
             'B': None, 
             'C': None}
@@ -92,20 +123,31 @@ class ASCII_Comp(Comp_Intcode):
         self.MANUAL_INPUT = not move_mode 
         print(f'ASCII mode successfully switched to {self.sw[0]}')
         return self.sw[0]
-        
-    def convert_program(program):
+
+    def convert_user_program(program):
+        '''User program segments are fed to the Intcode computer as a list of
+        ASCII characters (including the commas) and a newline'''
         ascii_program = []
         for inst in program:
-            ascii_program.extend(ord(inst),ord(','))
-        return ascii_program[:-1]
+            ascii_program.append(ord(inst))
+            ascii_program.append(ord(','))
+        ascii_program.append(ord('\n'))
+        return ascii_program
     
     def input_value_generator(self):
         ''' Overrides parent class function to provide specific inputs to the Intcode Computer
         For ASCII Comp, these inputs are program sequences XXXYYYZZZ'''
-        something = 0
-        return something
+        movement_programs = IT.chain.from_iterable(self.user_programs.values())
+        return next(movement_programs)
     #End class ASCII
-    
+
+def find_move_patterns(stream):
+        ''' Looks for repeated patterns in the stream, returns 3 groupings'''
+        # A begins with first 2 movements (or more)
+        # C ends with last 2 movements (or more)
+        # NEEDS WORK
+        return A,B,C,seq 
+
 def get_image(stream):
     ''' Reads a stream of characters,
     and stores data for each new Pixel object
