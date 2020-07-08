@@ -44,7 +44,6 @@ class robot():
     def __init__(self, x, y, hd):
         self.x = x
         self.y = y
-        self.hd = hd	#NESW
         path = []
         visited = []
 
@@ -52,12 +51,16 @@ class robot():
     def pos(self)
         return tuple(self.x, self.y)
 
+	@property
+	def hdg(self):
+		
+
     def GoTo(self, grid, dest):
         origin = self.pos
         current = grid[self.y][self.x]
         certain = [origin]
         candidates = 
-        while dest not in path:
+        while open_nodes and (dest not in path):
             #Test fwd
             testxy = tpadd(self.pos,self.hdg)
 
@@ -79,33 +82,32 @@ class robot():
         path.append('L' or 'R')
         return new_hdg
 
-    def convert_trail(trail):
+    def convert_trail(seq):
         '''Condenses repeated steps in the Trail attribute'''
         # 3 lefts = 1 right
         # Fwd, Fwd, Fwd, ....  = Integer
-        short_trail = []
-        tr = (i for i in trail)    
-        a = next(tr)
-        while True:
-            step = [a]
-            b = next(tr)        #FIX THIS - need to exit if LAST
-            while b == step[0]:
-                step.append(b)
-                b = next(tr)
-            n = (step[0],len(step))
-            short_trail.append(n)
-            print(short_trail)
-            a = copy(b)
-        print(short_trail)
-        return(short_trail)
-
-
-                
-
-
-
-        
-
+    	short_list = []
+    	step = [seq[0]]
+    	for i in seq[1:]:
+        	if i == step[0]:
+            	step.append(i)
+        	else:
+            	short_list.append((step[0],len(step)))
+            	step = [i]
+            	#print(short_list)
+    	short_list.append((step[0],len(step)))
+    	
+	new_trail = []
+	for grp in short_list:
+		if grp[0] == 'Fwd':
+			new_trail.append(grp[1])
+		elif grp == ('Left',3):
+			new_trail.append('R')
+		else:
+			new_trail.append('L')
+			
+	return new_trail
+    
 
 class ASCII_Comp(Comp_Intcode):
     def __init_(self, sw_file):
@@ -141,11 +143,13 @@ class ASCII_Comp(Comp_Intcode):
         return next(movement_programs)
     #End class ASCII
 
-def find_move_patterns(stream):
+def find_move_patterns(trail):
         ''' Looks for repeated patterns in the stream, returns 3 groupings'''
         # A begins with first 2 movements (or more)
         # C ends with last 2 movements (or more)
-        # NEEDS WORK
+        #NEEDS WORK
+
+
         return A,B,C,seq 
 
 def get_image(stream):
