@@ -28,7 +28,7 @@ West = Point(-1,0,'<')
 hdgs = deque([North, East, South, West])
 
 class Pixel(Point):
-    robot = '<^>v'
+    robot = '^>v<'
     scaffold = '#O' + robot
     
     def __init__(self, x, y, char):
@@ -40,12 +40,11 @@ class Pixel(Point):
     
     #End class Pixel
 
-class robot():
-    def __init__(self, x, y, hd):
-        self.x = x
-        self.y = y
-        path = []
-        visited = []
+class Robot(Point):
+    def __init__(self, x, y, hdg):
+        super().__init__(x,y,state=hdg)
+        self.path = []
+        self.visited = []
 
     @property
     def pos(self)
@@ -53,7 +52,9 @@ class robot():
 
 	@property
 	def hdg(self):
-		
+		return
+
+
 
     def GoTo(self, grid, dest):
         origin = self.pos
@@ -157,7 +158,7 @@ def get_image(stream):
     and stores data for each new Pixel object
     Returns an array (tuple of tuples) of Pixel objects'''
     screen = ''.join(chr(p) for p in stream).rstrip('\n').splitlines()
-    pixels = [[Point(jcol,irow,p) 
+    pixels = [[Pixel(jcol,irow,p) 
            for jcol,p in enumerate(row)] 
            for irow,row in enumerate(screen)]
     #logging.debug(pixels[:][:])
@@ -209,9 +210,17 @@ def mainB():
     data_stream = AC1.memory[:]
     image = get_image(data_stream)
     pprint([''.join([p.state for p in row]) for row in image]) 
-    nodes = get_nodes(image)
+
+    nodes = get_nodes(image, '#')
+def find_bot(grid)
+	for row in grid:
+		for p in row:
+			if p.state in p.robot:
+				h = hdgs(p.state)
+				bot = Robot(p.x,p.y,hdg)
+	
     pprint(nodes)
-    robot_pos = [(p.y,p.x) for p in image if p.state in Pixel.robot]
+    
     path = find_path(nodes,robot_pos)
 #make_directions
 #make_movement_programs
@@ -237,7 +246,7 @@ def test2():
     data_stream = [ord(c) for c in test_input]
     image = get_image(data_stream)
     pprint([''.join([p.state for p in row]) for row in image]) 
-    nodes = get_nodes(image)
+    nodes = get_nodes(image, '#')
     pprint(nodes)
     get_node_nbrs(nodes)
     print([(node.y,node.x,len(node.nbrs)) for node in nodes])
