@@ -41,7 +41,9 @@ class Node(Point):
 
 
 def find_short_path(grid, current_node, parent_path, destination):
-    ''' Walks through node network to identify: valid paths from A to B.  Does not require that all nodes be visited
+    ''' Recursively Walks through node network to identify: valid paths from A to B.  
+    Does not require that all nodes be visited
+    Probably similar to Dykstra algorithm
     '''
     cx, cy = current_node.x, current_node.y
     if current_node in parent_path:

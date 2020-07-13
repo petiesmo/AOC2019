@@ -27,34 +27,48 @@ South = Point(0,-1,'v')
 West = Point(-1,0,'<')
 hdgs = deque([North, East, South, West])
 
+ROBOT = '^>v<'
+SCAFFOLD = '#O' + ROBOT
+
 class Pixel(Point):
-    robot = '^>v<'
-    scaffold = '#O' + robot
     
     def __init__(self, x, y, char):
         super().__init__(x, y, state=char)
 
     @property
     def is_scaff(self):
-        return (self.state in self.scaffold)
+        return (self.state in SCAFFOLD)
     
     #End class Pixel
 
 class Robot(Point):
-    def __init__(self, x, y, hdg):
-        super().__init__(x,y,state=hdg)
+    def __init__(self, x, y, heading):
+        super().__init__(x, y, state='Start', char=heading)
         self.path = []
         self.visited = []
-
+        self._hdg = hdgs.copy()
+        while self.hdg.state != heading:
+            self.turn('L')
     @property
-    def pos(self)
-        return tuple(self.x, self.y)
+    def char(self):
+        return self._hdg[0].state
+    @property
+    def hdg(self):
+        return self._hdg[0]
 
-	@property
-	def hdg(self):
-		return
+    def turn(self, LR='L'):
+        if LR == 'L':
+            self._hdg.rotate()
+        elif LR == 'R':
+            self._hdg.rotate(-1)
+        return new_hdg
 
-
+    @hdg.setter
+    def hdg(self, URDL=None):         
+        if URDL is not None:
+            while self.char != URDL:
+                self.turn('L')
+        return None
 
     def GoTo(self, grid, dest):
         origin = self.pos
@@ -62,14 +76,14 @@ class Robot(Point):
         certain = [origin]
         candidates = 
         while open_nodes and (dest not in path):
+            #TODO Incorporate the path following method here
             #Test fwd
             testxy = tpadd(self.pos,self.hdg)
-
             #Test L
             hdgs.rotate()
             hdgs[0]
-            if teatxy is node:
-                
+            if testxy is node:
+                path.append('L' or 'R')
             #Test R
 
     def move_fwd(self):
@@ -79,36 +93,33 @@ class Robot(Point):
         self.x, self.y = new.x, new.y
         return None
 
-    def turn(self):
-        path.append('L' or 'R')
-        return new_hdg
 
     def convert_trail(seq):
         '''Condenses repeated steps in the Trail attribute'''
         # 3 lefts = 1 right
         # Fwd, Fwd, Fwd, ....  = Integer
-    	short_list = []
-    	step = [seq[0]]
-    	for i in seq[1:]:
-        	if i == step[0]:
-            	step.append(i)
-        	else:
-            	short_list.append((step[0],len(step)))
-            	step = [i]
-            	#print(short_list)
-    	short_list.append((step[0],len(step)))
-    	
-	new_trail = []
-	for grp in short_list:
-		if grp[0] == 'Fwd':
-			new_trail.append(grp[1])
-		elif grp == ('Left',3):
-			new_trail.append('R')
-		else:
-			new_trail.append('L')
-			
-	return new_trail
-    
+        short_list = []
+        step = [seq[0]]
+        for i in seq[1:]:
+            if i == step[0]:
+                step.append(i)
+            else:
+                short_list.append((step[0],len(step)))
+                step = [i]
+                #print(short_list)
+        short_list.append((step[0],len(step)))
+        
+        new_trail = []
+        for grp in short_list:
+            if grp[0] == 'Fwd':
+                new_trail.append(grp[1])
+            elif grp == ('Left',3):
+                new_trail.append('R')
+            else:
+                new_trail.append('L')
+                
+        return new_trail
+# End Class Robot    
 
 class ASCII_Comp(Comp_Intcode):
     def __init_(self, sw_file):
@@ -140,16 +151,17 @@ class ASCII_Comp(Comp_Intcode):
     def input_value_generator(self):
         ''' Overrides parent class function to provide specific inputs to the Intcode Computer
         For ASCII Comp, these inputs are program sequences XXXYYYZZZ'''
+        #TODO Update the exact feed into the Intcode comp (it's close)
         movement_programs = IT.chain.from_iterable(self.user_programs.values())
         return next(movement_programs)
-    #End class ASCII
+#End class ASCII_Comp
+
 
 def find_move_patterns(trail):
         ''' Looks for repeated patterns in the stream, returns 3 groupings'''
         # A begins with first 2 movements (or more)
         # C ends with last 2 movements (or more)
-        #NEEDS WORK
-
+        #TODO NEED to develop algorithm to extract move pattern groups
 
         return A,B,C,seq 
 
@@ -166,9 +178,9 @@ def get_image(stream):
 
 def get_nodes(image, state_criteria='*'):
     ids = IT.count(0)
-    return [Node(next(ids),p.x,p.y,state='N') 
+    return [Node(next(ids),p.x,p.y,state=p.state) 
             for p in IT.chain.from_iterable(image)
-            if p.state == state_criteria]
+            if p.state in state_criteria]
 
 def get_node_nbrs(nodes):
     for n in nodes:
@@ -185,7 +197,6 @@ def read_input(file):
         stream = f.read()
     return stream
 
-	
 
 def mainA():
     #logfile = 'AOC2019_17.log'
@@ -211,17 +222,18 @@ def mainB():
     image = get_image(data_stream)
     pprint([''.join([p.state for p in row]) for row in image]) 
 
-    nodes = get_nodes(image, '#')
-def find_bot(grid)
-	for row in grid:
-		for p in row:
-			if p.state in p.robot:
-				h = hdgs(p.state)
-				bot = Robot(p.x,p.y,hdg)
-	
-    pprint(nodes)
+    nodes = get_nodes(image, '#<^>v')
+    bot = [Robot(n.x,n.y,state=n.state) for n in nodes if n.state in ROBOT][0]
+    ends = 2 # Nodes with only 1 neighbor
+    pprint(nodes,bot,ends)
+
+    bot.GoTo(grid, end2)
+    trail = bot.trail
+    short_trail = bot.convert_trail(trail)
+    patterns = bot.find_move_patterns(short_trail)
     
-    path = find_path(nodes,robot_pos)
+
+    
 #make_directions
 #make_movement_programs
 #make_main_movement_routine

@@ -29,19 +29,23 @@ class Point():
         self.state = state
         self.__dict__.update(kwargs)
     
+    @property
+    def pos(self)
+        return tuple(self.x, self.y)
+
     def __repr__(self):
         return f'Point(x={self.x}, y={self.y}, state={self.state})'
 
-	def __add__(self, other):
-		return (self.x + other.x, self.y + other.y)
+    def __add__(self, other):
+        return (self.x + other.x, self.y + other.y)
 
     def __sub__(self, other):
         return (self.x - other.x, self.y - other.y)
 
     def dist(self, other, crow=True):
-        if crow:
+        if crow:    #Euclidian
             return ((self.x-other.x)**2 + (self.y - other.y)**2)**.5
-        else: #Manhattan
+        else:       #Manhattan
             return abs(self.x-other.x) + abs(self.y-other.y)         
     #End class Point
 
@@ -89,12 +93,12 @@ class Grid():
         return None 
         
     def convert_to_rc(self, x, y):
-        r,c = self.originrc
+        r, c = self.originrc
         r = y - self.ymin
         c = x - self.xmin
-        return (r,c)
+        return (r, c)
     
-    def pad_grid(self,negx,posx,negy,posy):
+    def pad_grid(self, negx, posx, negy, posy):
         ''' Future implementation'''
         return None
     
@@ -117,10 +121,10 @@ class Grid():
         return [Node(next(ids), p.x, p.y) for p in points if p.is_node]
 
     
-    def find_paths(self):
+    def find_network(self):
         '''Scans a grid of objects row by row, then col by col, looking for 
         node connections (orthogonal paths only)
-        Returns tuple of nodes + dict of paths'''
+        Returns tuple of nodes + dict of links'''
         links = IT.count(0)
         grid = self.array
         #Check linkage between adjacent nodes horizontally
