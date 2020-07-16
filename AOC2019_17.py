@@ -17,7 +17,7 @@ from IntcodeComp import Comp_Intcode
 from Collections import deque
 from pprint import pprint
 import itertools as IT
-from enum import Emum
+import re
 
 from Point_Node_Grid import Point, Node, Grid, get_nbrs, tpadd
 
@@ -61,6 +61,8 @@ class Robot(Point):
             self._hdg.rotate()
         elif LR == 'R':
             self._hdg.rotate(-1)
+		else:
+			raise ValueError('L or R only')
         return new_hdg
 
     @hdg.setter
@@ -161,7 +163,7 @@ def find_move_patterns(trail):
         ''' Looks for repeated patterns in the stream, returns 3 groupings'''
         # A begins with first 2 movements (or more)
         # C ends with last 2 movements (or more)
-        #TODO NEED to develop algorithm to extract move pattern groups
+        #TODO Implement algorithm to extract move pattern groups (use regex)
 
         return A,B,C,seq 
 
