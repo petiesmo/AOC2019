@@ -29,9 +29,9 @@ hdgs = deque([North, East, South, West])
 
 ROBOT = '^>v<'
 SCAFFOLD = '#O' + ROBOT
+MAX_LENGTH = 20
 
 class Pixel(Point):
-    
     def __init__(self, x, y, char):
         super().__init__(x, y, state=char)
 
@@ -39,7 +39,7 @@ class Pixel(Point):
     def is_scaff(self):
         return (self.state in SCAFFOLD)
     
-    #End class Pixel
+#End class Pixel
 
 class Robot(Point):
     def __init__(self, x, y, heading):
@@ -61,8 +61,8 @@ class Robot(Point):
             self._hdg.rotate()
         elif LR == 'R':
             self._hdg.rotate(-1)
-		else:
-			raise ValueError('L or R only')
+        else:
+            raise ValueError('L or R only')
         return new_hdg
 
     @hdg.setter
@@ -87,6 +87,25 @@ class Robot(Point):
             if testxy is node:
                 path.append('L' or 'R')
             #Test R
+
+    def follow_a_path(self, grid, destination):
+        ''' Robot method to follow a chalk line path; 
+            Prefers to go forward before looking to turn'''
+        #TODO: Finish implementing this method for the robot
+        not_visited = grid.nodes[:]
+        visited = []
+        trail = []
+        self.pos = (self.x, self.y)
+        self.hdg
+
+        while not_visited and (self.pos not destination):
+            if self.pos + self.hdg == valid_node:
+                visted.append(not_visited.remove(current_node))
+                trail.append('F')
+                self.move_fwd() 
+            else:
+                self.trail.append('L')
+                self.turn_left()
 
     def move_fwd(self):
         self.visited.append(current_node)
@@ -134,7 +153,7 @@ class ASCII_Comp(Comp_Intcode):
 
         self.input_string = IT.chain.fromiterable(self.user_programs.values())
         
-    def set_mode_movement(self,move_mode=True):
+    def set_mode_movement(self, move_mode=True):
         self.sw[0] = 2 if move_mode is True else 1
         self.MANUAL_INPUT = not move_mode 
         print(f'ASCII mode successfully switched to {self.sw[0]}')
@@ -160,10 +179,16 @@ class ASCII_Comp(Comp_Intcode):
 
 
 def find_move_patterns(trail):
-        ''' Looks for repeated patterns in the stream, returns 3 groupings'''
+        ''' Looks for repeated patterns in the trail stream, returns 3 groupings'''
         # A begins with first 2 movements (or more)
         # C ends with last 2 movements (or more)
         #TODO Implement algorithm to extract move pattern groups (use regex)
+        import re
+        trail_str = ','.join([str(i) for i in trail])
+        for seq_length in range(MAX_LENGTH,2,-1):
+            seq = trail_str[:seq_length]
+            re.finditer()
+
 
         return A,B,C,seq 
 
@@ -217,6 +242,7 @@ def mainA():
 
 
 def mainB():
+    ''' Driving code for Day17 Part B'''
     ASCII_Software = 'AOC2019_17.ini'
     AC1 = ASCII_Comp(sw_file=ASCII_Software)
     AC1.LOOP_compute_until_output_or_stop(stop_at_each_output=False)
@@ -224,16 +250,24 @@ def mainB():
     image = get_image(data_stream)
     pprint([''.join([p.state for p in row]) for row in image]) 
 
-    nodes = get_nodes(image, '#<^>v')
+    nodes = get_nodes(image, state_criteria='#<^>v')
     bot = [Robot(n.x,n.y,state=n.state) for n in nodes if n.state in ROBOT][0]
-    ends = 2 # Nodes with only 1 neighbor
-    pprint(nodes,bot,ends)
+    get_node_nbrs(nodes)
+    pprint(nodes,bot)
 
-    bot.GoTo(grid, end2)
+    for n in nodes:
+        image[n.y][n.x] = n
+        if len(n.nbrs) == 1 and n.state == '#':
+            endpt = n
+
+    bot.GoTo(image, endpt)
     trail = bot.trail
     short_trail = bot.convert_trail(trail)
     patterns = bot.find_move_patterns(short_trail)
-    
+    bot.
+
+    AC1.set_mode_movement(move_mode=True)
+    AC1.convert_user_program()
 
     
 #make_directions

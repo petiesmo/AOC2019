@@ -123,7 +123,7 @@ class Grid():
     
     def find_network(self):
         '''Scans a grid of objects row by row, then col by col, looking for 
-        node connections (orthogonal paths only)
+        node connections (orthogonal paths only) at intersections/ends
         Returns tuple of nodes + dict of links'''
         links = IT.count(0)
         grid = self.array
