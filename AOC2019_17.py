@@ -183,7 +183,6 @@ def find_move_patterns(trail):
         # A begins with first 2 movements (or more)
         # C ends with last 2 movements (or more)
         #TODO Implement algorithm to extract move pattern groups (use regex)
-        import re
         trail_str = ','.join([str(i) for i in trail])
         for seq_length in range(MAX_LENGTH,2,-1):
             seq = trail_str[:seq_length]
@@ -202,18 +201,6 @@ def get_image(stream):
            for irow,row in enumerate(screen)]
     #logging.debug(pixels[:][:])
     return tuple((tuple(line) for line in pixels))
-
-def get_nodes(image, state_criteria='*'):
-    ids = IT.count(0)
-    return [Node(next(ids),p.x,p.y,state=p.state) 
-            for p in IT.chain.from_iterable(image)
-            if p.state in state_criteria]
-
-def get_node_nbrs(nodes):
-    for n in nodes:
-        nbr_coords = get_nbrs(n.y, n.x)
-        n.nbrs = [nbr for nbr in nodes if (nbr.y, nbr.x) in nbr_coords]
-    return None
 
 def get_alignment_params(nodes):
     '''Finds intersections and returns tuple of (Pixel, AlignParam) pairs'''
@@ -247,11 +234,11 @@ def mainB():
     AC1 = ASCII_Comp(sw_file=ASCII_Software)
     AC1.LOOP_compute_until_output_or_stop(stop_at_each_output=False)
     data_stream = AC1.memory[:]
-    image = get_image(data_stream)
+    image = Grid(get_image(data_stream))
     pprint([''.join([p.state for p in row]) for row in image]) 
 
-    nodes = get_nodes(image, state_criteria='#<^>v')
-    bot = [Robot(n.x,n.y,state=n.state) for n in nodes if n.state in ROBOT][0]
+    image.get_nodes(state_criteria='#<^>v')
+    bot = [Robot(n.x,n.y,state=n.state) for n in image.nodes if n.state in ROBOT][0]
     get_node_nbrs(nodes)
     pprint(nodes,bot)
 

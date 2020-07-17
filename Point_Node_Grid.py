@@ -65,16 +65,16 @@ class Grid():
     Adjusts Row-Column window to fit x,y extents of Points'''
     
     def __init__(self, points, originxy=(0,0)):
-        self.points = points           #Object list (can be sparse)
+        self.points = list(IT.chain.from_iterable(points))           #Object list or array (can be sparse)
         self.originxy = originxy       #Maintains translation from row,col to x,y
-        self.points.append(Point(*self.originxy,state='*'))
-        self.nodes = [Node(0, *originxy, state='*')]
+        self.origin = Point(*self.originxy,state='*'))
+        self.nodes = []
         self.paths = []
     
     @property
     def array(self):
         self.find_extents()
-        array = [['NaN' for col in range(self.ncols)] for row in range(self.nrows)]
+        array = [[None for col in range(self.ncols)] for row in range(self.nrows)]
         for p in self.points:
             r,c = self.convert_to_rc(p.x,p.y)
             array[r][c] = p
@@ -104,23 +104,19 @@ class Grid():
     
     def __repr__(self):
         return f'Grid(rows:{self.nrows}, cols:{self.ncols}, origin:{self.originrc})'
-    
-    def find_nodes(self):
-        '''Processing script: accepts an array (list of lists) of points, 
-        Checks each point against node criteria
-        Modifies Point object is_node value
-        Returns a list of Node objects'''
-        in_grid = lambda r,c: (r in range(self.nrows)) and (c in range(self.ncols)) 
-        points = [p for p in IT.chain.from_iterable(self)]
-        for p in points:
-            nbr_vals = [self.array[nr][nc].state if in_grid(nr,nc) else 'NaN' for (nr,nc) in p.nbrs]
-            if p.is_scaff:
-                #p.is_path = nbr_vals[0] == nbr_vals[2] and nbr_vals[1] == nbr_vals[3] and nbr_vals[0] != nbr_vals[1]
-                p.is_node = not(is_path)
-        ids = IT.count(0)
-        return [Node(next(ids), p.x, p.y) for p in points if p.is_node]
 
-    
+	def find_nodes(self, state_criteria='*'):
+		'''Processing script:
+        Checks each point against node criteria.  Populates list of Node objects'''		ids = IT.count(0)
+    	self.nodes = [Node(next(ids),p.x,p.y,state=p.state) for p in self.points if p.state in state_criteria]
+		return None
+
+	def get_node_nbrs(self):
+    	for n in nodes:
+        	nbr_coords = get_nbrs(n.y, n.x)
+        	n.nbrs = [nbr for nbr in nodes if (nbr.y, nbr.x) in nbr_coords]
+    	return None
+
     def find_network(self):
         '''Scans a grid of objects row by row, then col by col, looking for 
         node connections (orthogonal paths only) at intersections/ends
