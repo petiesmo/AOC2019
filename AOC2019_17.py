@@ -37,7 +37,7 @@ class Pixel(Point):
 
     @property
     def is_scaff(self):
-        return (self.state in SCAFFOLD)
+        return self.state in SCAFFOLD
     
 #End class Pixel
 
@@ -72,22 +72,6 @@ class Robot(Point):
                 self.turn('L')
         return None
 
-    def GoTo(self, grid, dest):
-        origin = self.pos
-        current = grid[self.y][self.x]
-        certain = [origin]
-        candidates = 
-        while open_nodes and (dest not in path):
-            #TODO Incorporate the path following method here
-            #Test fwd
-            testxy = tpadd(self.pos,self.hdg)
-            #Test L
-            hdgs.rotate()
-            hdgs[0]
-            if testxy is node:
-                path.append('L' or 'R')
-            #Test R
-
     def follow_a_path(self, grid, destination):
         ''' Robot method to follow a chalk line path; 
             Prefers to go forward before looking to turn'''
@@ -100,19 +84,13 @@ class Robot(Point):
 
         while not_visited and (self.pos not destination):
             if self.pos + self.hdg == valid_node:
-                visted.append(not_visited.remove(current_node))
+                visted.append(current_node)
+				not_visited.remove(current_node))
                 trail.append('F')
-                self.move_fwd() 
+                self.pos = self + self.hdg
             else:
                 self.trail.append('L')
-                self.turn_left()
-
-    def move_fwd(self):
-        self.visited.append(current_node)
-        current_node = new_node
-        self.path.append(self.hdg)
-        self.x, self.y = new.x, new.y
-        return None
+                self.turn()
 
 
     def convert_trail(seq):

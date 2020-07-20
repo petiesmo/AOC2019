@@ -112,7 +112,7 @@ class Grid():
 		return None
 
 	def get_node_nbrs(self):
-    	for n in nodes:
+    	for n in self.nodes:
         	nbr_coords = get_nbrs(n.y, n.x)
         	n.nbrs = [nbr for nbr in nodes if (nbr.y, nbr.x) in nbr_coords]
     	return None
