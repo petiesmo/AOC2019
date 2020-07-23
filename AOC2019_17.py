@@ -77,17 +77,15 @@ class Robot(Point):
             Prefers to go forward before looking to turn'''
         #TODO: Finish implementing this method for the robot
         not_visited = grid.nodes[:]
-        visited = []
         trail = []
-        self.pos = (self.x, self.y)
-        self.hdg
 
         while not_visited and (self.pos not destination):
-            if self.pos + self.hdg == valid_node:
-                visted.append(current_node)
+			test_coord = self + self.hdg
+			if any([n.pos == test_coord for n in current_node.nbrs]):
 				not_visited.remove(current_node))
                 trail.append('F')
-                self.pos = self + self.hdg
+                self.pos = test_coord
+				current_node = grid[self.y][self.x]
             else:
                 self.trail.append('L')
                 self.turn()
@@ -164,9 +162,15 @@ def find_move_patterns(trail):
         trail_str = ','.join([str(i) for i in trail])
         for seq_length in range(MAX_LENGTH,2,-1):
             seq = trail_str[:seq_length]
-            re.finditer()
-
-
+            avail = trail_str[seq_length:]
+			matches = re.finditer()
+			
+			if len(matches):
+				A = seq
+				re.split(matches,trail_str)
+		MAXB = 
+		for seq_length in range(
+			
         return A,B,C,seq 
 
 def get_image(stream):
