@@ -2,24 +2,27 @@
 ASCII (Aft Scaffolding and Information Interface)
 Part A: Find alignment parameters of scaffolding intersections
 Part B: Write program segments A,B,C to navigate robot on all scaffolds
-'''
-''' Character representations:
+
+Character representations:
 '.' = Space, '#' = Scaffold, 'o' = Intersection
 <,^,>,v = Robot location + direction
 X = Robot falls into space
-'''
-''' Part B program segment requirements:
+
+Part B program segment requirements:
 Comprised of ASCII characters, representing turns (L/R), fwd steps (integer), commas, and a newline
 3 Segments (A/B/C): No more than 20 characters (including commas, but not newline)
 Main movement routine: Calls A/B/C segments
 '''
 from IntcodeComp import Comp_Intcode 
-from Collections import deque
+from collections import deque
 from pprint import pprint
 import itertools as IT
 import re
 
-from Point_Node_Grid import Point, Node, Grid, get_nbrs, tpadd
+import Point_Node_Grid
+from Point_Node_Grid import Point
+from Point_Node_Grid import Node
+from Point_Node_Grid import Grid
 
 North = Point(0,1,"^")
 East = Point(1,0,'>')
@@ -31,19 +34,20 @@ ROBOT = '^>v<'
 SCAFFOLD = '#O' + ROBOT
 MAX_LENGTH = 20
 
+
 class Pixel(Point):
     def __init__(self, x, y, char):
         super().__init__(x, y, state=char)
 
     @property
     def is_scaff(self):
-        return self.state in SCAFFOLD
-    
+        return self.state in SCAFFOLD  
 #End class Pixel
+
 
 class Robot(Point):
     def __init__(self, x, y, heading):
-        super().__init__(x, y, state='Start', char=heading)
+        super().__init__(x, y, state=heading)
         self.path = []
         self.visited = []
         self._hdg = hdgs.copy()
@@ -82,16 +86,15 @@ class Robot(Point):
         self.pos = (self.x, self.y)
         self.hdg
 
-        while not_visited and (self.pos not destination):
+        while not_visited and (self.pos is not destination):
             if self.pos + self.hdg == valid_node:
                 visted.append(current_node)
-				not_visited.remove(current_node))
+                not_visited.remove(current_node)
                 trail.append('F')
                 self.pos = self + self.hdg
             else:
                 self.trail.append('L')
                 self.turn()
-
 
     def convert_trail(seq):
         '''Condenses repeated steps in the Trail attribute'''
@@ -120,11 +123,12 @@ class Robot(Point):
         return new_trail
 # End Class Robot    
 
+
 class ASCII_Comp(Comp_Intcode):
     def __init_(self, sw_file):
         super().__init__(sw_file = sw_file)
         self.user_programs = {
-            'MMR': None #Main move routine
+            'MMR': None, #Main move routine
             'A': None, #End with \n(10)
             'B': None, 
             'C': None}
@@ -162,11 +166,15 @@ def find_move_patterns(trail):
         # C ends with last 2 movements (or more)
         #TODO Implement algorithm to extract move pattern groups (use regex)
         trail_str = ','.join([str(i) for i in trail])
-        for seq_length in range(MAX_LENGTH,2,-1):
+        for seq_length in range(MAX_LENGTH, 2, -2):
             seq = trail_str[:seq_length]
-            re.finditer()
+            avail = trail_str[seq_length:]
+            matches = re.finditer(seq, avail)
+            if len(matches) > 0:
+                A = seq
 
-
+                break
+        
         return A,B,C,seq 
 
 def get_image(stream):
@@ -180,9 +188,9 @@ def get_image(stream):
     #logging.debug(pixels[:][:])
     return tuple((tuple(line) for line in pixels))
 
-def get_alignment_params(nodes):
+def get_alignment_params(nodelst):
     '''Finds intersections and returns tuple of (Pixel, AlignParam) pairs'''
-    return tuple([(n, n.x*n.y) for n in nodes if len(n.nbrs) == 4])
+    return tuple([(n, n.x*n.y) for n in nodelst if len(n.nbrs) == 4])
     
 def read_input(file):
     with open(file,'r') as f:
@@ -197,11 +205,12 @@ def mainA():
     ASCII_Comp = Comp_Intcode(sw_file=ASCII_Software)
     ASCII_Comp.LOOP_compute_until_output_or_stop(stop_at_each_output=False)
     stream = ASCII_Comp.memory[:]
-    image = get_image(stream)
-    pprint([''.join([p.state for p in row]) for row in image])
-    nodes = get_nodes(image, '#')
-    get_node_nbrs(nodes)
-    intersections = get_alignment_params(nodes)
+    img = get_image(stream)
+    pprint([''.join([p.state for p in row]) for row in img])
+    image = Grid(img)
+    image.find_nodes(state_criteria='#')
+    image.get_node_nbrs()
+    intersections = get_alignment_params(image.nodes)
     print(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result
     #logging.info(f'Calibration is {sum([ap for pixel,ap in intersections])}')  #Part A result: 3336
 
@@ -213,26 +222,29 @@ def mainB():
     AC1.LOOP_compute_until_output_or_stop(stop_at_each_output=False)
     data_stream = AC1.memory[:]
     image = Grid(get_image(data_stream))
-    pprint([''.join([p.state for p in row]) for row in image]) 
+    pprint([''.join([p.state for p in row]) for row in image.array]) 
 
-    image.get_nodes(state_criteria='#<^>v')
-    bot = [Robot(n.x,n.y,state=n.state) for n in image.nodes if n.state in ROBOT][0]
-    get_node_nbrs(nodes)
-    pprint(nodes,bot)
+    image.find_nodes(state_criteria='#<^>v')
+    bot = [Robot(n.x,n.y,n.state) for n in image.nodes if n.state in ROBOT][0]
+    image.get_node_nbrs()
+    intersections = get_alignment_params(image.nodes)
+    pprint(image.nodes)
+    pprint(intersections)
+    print(bot)
 
-    for n in nodes:
-        image[n.y][n.x] = n
+    for n in image.nodes:
         if len(n.nbrs) == 1 and n.state == '#':
             endpt = n
 
     bot.GoTo(image, endpt)
     trail = bot.trail
     short_trail = bot.convert_trail(trail)
-    patterns = bot.find_move_patterns(short_trail)
-    bot.
+    pprint(short_trail)
+    #patterns = bot.find_move_patterns(short_trail)
+    #bot.
 
-    AC1.set_mode_movement(move_mode=True)
-    AC1.convert_user_program()
+    #AC1.set_mode_movement(move_mode=True)
+    #AC1.convert_user_program()
 
     
 #make_directions
@@ -266,6 +278,6 @@ def test2():
 
 if __name__ == '__main__':
     #test1()
-    mainA()
+    #mainA()
     #test2()
-    #mainB()
+    mainB()

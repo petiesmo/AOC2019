@@ -30,7 +30,7 @@ class Point():
         self.__dict__.update(kwargs)
     
     @property
-    def pos(self)
+    def pos(self):
         return tuple(self.x, self.y)
 
     def __repr__(self):
@@ -67,7 +67,7 @@ class Grid():
     def __init__(self, points, originxy=(0,0)):
         self.points = list(IT.chain.from_iterable(points))           #Object list or array (can be sparse)
         self.originxy = originxy       #Maintains translation from row,col to x,y
-        self.origin = Point(*self.originxy,state='*'))
+        self.origin = Point(*self.originxy, state='*')
         self.nodes = []
         self.paths = []
     
@@ -105,17 +105,18 @@ class Grid():
     def __repr__(self):
         return f'Grid(rows:{self.nrows}, cols:{self.ncols}, origin:{self.originrc})'
 
-	def find_nodes(self, state_criteria='*'):
-		'''Processing script:
-        Checks each point against node criteria.  Populates list of Node objects'''		ids = IT.count(0)
-    	self.nodes = [Node(next(ids),p.x,p.y,state=p.state) for p in self.points if p.state in state_criteria]
-		return None
+    def find_nodes(self, state_criteria='*'):
+        '''Processing script:
+        Checks each point against node criteria.  Populates list of Node objects'''	
+        ids = IT.count(0)
+        self.nodes = [Node(next(ids),p.x,p.y,state=p.state) for p in self.points if p.state in state_criteria]
+        return None
 
-	def get_node_nbrs(self):
-    	for n in self.nodes:
-        	nbr_coords = get_nbrs(n.y, n.x)
-        	n.nbrs = [nbr for nbr in nodes if (nbr.y, nbr.x) in nbr_coords]
-    	return None
+    def get_node_nbrs(self):
+        for n in self.nodes:
+            nbr_coords = get_nbrs(n.y, n.x)
+            n.nbrs = [nbr for nbr in self.nodes if (nbr.y, nbr.x) in nbr_coords]
+        return None
 
     def find_network(self):
         '''Scans a grid of objects row by row, then col by col, looking for 
