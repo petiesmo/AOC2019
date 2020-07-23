@@ -236,7 +236,7 @@ def mainB():
         if len(n.nbrs) == 1 and n.state == '#':
             endpt = n
 
-    bot.GoTo(image, endpt)
+    bot.follow_a_path(image, endpt)
     trail = bot.trail
     short_trail = bot.convert_trail(trail)
     pprint(short_trail)
