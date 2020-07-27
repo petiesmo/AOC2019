@@ -97,6 +97,11 @@ class Grid():
         r = y - self.ymin
         c = x - self.xmin
         return (r, c)
+
+	def getxy(self, x, y):
+		''' Retreive object stored at x,y'''
+		r,c = convert_to_rc(x,y)
+		return self.array[r][c]
     
     def pad_grid(self, negx, posx, negy, posy):
         ''' Future implementation'''

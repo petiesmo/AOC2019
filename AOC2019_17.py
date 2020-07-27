@@ -80,16 +80,14 @@ class Robot(Point):
         ''' Robot method to follow a chalk line path; 
             Prefers to go forward before looking to turn'''
         #TODO: Finish implementing this method for the robot
-        not_visited = grid.nodes[:]
+        not_visited = [n.pos for n in grid.nodes]
         visited = []
         trail = []
-
-        while not_visited and (self.pos is not destination):
-            if len(current_node.nbrs) == 1:
-                print('Dead end reached')
-                break
-            if self.pos + self.hdg == valid_node:
-                visited.append(current_node)
+		
+		current_node = grid.getxy(self.x,self.y)
+        while self.pos != destination:
+            if self.pos + self.hdg in not_visited:
+                visted.append(current_node)
                 not_visited.remove(current_node)
                 trail.append('F')
                 self.pos = self + self.hdg
@@ -117,7 +115,7 @@ class Robot(Point):
         for grp in short_list:
             if grp[0] == 'Fwd':
                 new_trail.append(grp[1])
-            elif grp == ('Left',3):
+            elif grp == ('L',3):
                 new_trail.append('R')
             else:
                 new_trail.append('L')
