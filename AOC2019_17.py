@@ -83,19 +83,21 @@ class Robot(Point):
         not_visited = grid.nodes[:]
         visited = []
         trail = []
-        self.pos = (self.x, self.y)
-        self.hdg
 
         while not_visited and (self.pos is not destination):
+            if len(current_node.nbrs) == 1:
+                print('Dead end reached')
+                break
             if self.pos + self.hdg == valid_node:
-                visted.append(current_node)
+                visited.append(current_node)
                 not_visited.remove(current_node)
                 trail.append('F')
                 self.pos = self + self.hdg
             else:
                 self.trail.append('L')
                 self.turn()
-
+        return trail
+        
     def convert_trail(seq):
         '''Condenses repeated steps in the Trail attribute'''
         # 3 lefts = 1 right
